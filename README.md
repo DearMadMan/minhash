@@ -24,5 +24,6 @@
 	fmt.Printf("set2 & set3: %f\n", set2.Jaccard(set3))
 ```
 
-## Refer
+## References
+
 [duhaime/minhash](https://github.com/duhaime/minhash)
