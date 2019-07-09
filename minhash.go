@@ -1,5 +1,10 @@
 package minhash
 
+import (
+	"math"
+	"math/rand"
+)
+
 const (
 	// Prime is the smallest prime larger than the largest
 	// possible hash value (max hash = 32 bit int)
@@ -10,10 +15,17 @@ const (
 type Minhash struct {
 	permutationsNumber int
 	permArgs           map[int][]uint32
+	rand               *rand.Rand
 }
 
 func New(permNumber int) Minhash {
-	m := Minhash{permutationsNumber: permNumber}
+	m := Minhash{permutationsNumber: permNumber, rand: rand.New(rand.NewSource(math.MaxInt64))}
+	m.init()
+	return m
+}
+
+func NewWithSeed(permNumber int, seed int64) Minhash {
+	m := Minhash{permutationsNumber: permNumber, rand: rand.New(rand.NewSource(seed))}
 	m.init()
 	return m
 }
@@ -26,7 +38,7 @@ func (m *Minhash) init() {
 		for j := 0; j < m.permutationsNumber; j++ {
 			ok := true
 			for ok {
-				n := randInt()
+				n := m.randInt()
 				_, ok = used[n]
 				if !ok {
 					used[n] = true
@@ -42,4 +54,8 @@ func (m *Minhash) NewSet(els []string) Set {
 	s := Set{Elements: els, minhash: m}
 	s.init()
 	return s
+}
+
+func (m *Minhash) randInt() uint32 {
+	return m.rand.Uint32()
 }
